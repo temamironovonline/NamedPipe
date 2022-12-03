@@ -7,17 +7,40 @@
 int main()
 {
 	system("chcp 1251");
-	SECURITY_ATTRIBUTES sa;
-	sa.bInheritHandle = TRUE;
-	sa.lpSecurityDescriptor = NULL;
-	sa.nLength = 0;
-
 	HANDLE pipe;
-	pipe = CreateNamedPipeA(path, PIPE_ACCESS_DUPLEX, PIPE_TYPE_MESSAGE, PIPE_UNLIMITED_INSTANCES, 120, 120, INFINITE, &sa);
-	if (pipe == INVALID_HANDLE_VALUE) printf("Ошибка %d", GetLastError());
-	
 	char* buffer = calloc(20, sizeof(char));
 	int countSymbols = 0;
+	while (TRUE)
+	{
+		pipe = CreateNamedPipeA(
+			path, 
+			PIPE_ACCESS_DUPLEX, 
+			PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT, 
+			PIPE_UNLIMITED_INSTANCES, 
+			120, 
+			120, 
+			INFINITE, 
+			NULL);
+		if (pipe == INVALID_HANDLE_VALUE) printf("Ошибка %d", GetLastError());
+
+		BOOL checkConnect;
+		checkConnect = ConnectNamedPipe(pipe, NULL);
+
+		if (checkConnect)
+		{
+			printf("Клиент подключился!");
+
+			ReadFile(pipe, buffer, 20, &checkConnect, NULL);
+			printf("%s", buffer);
+		}
+
+	}
+	
+	
+	
+	
+	
+	
 	int a;
 	while (1)
 	{

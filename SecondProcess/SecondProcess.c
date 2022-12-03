@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include <malloc.h>
 
-#define path "\\\\.\\pipe\\MyPipe"
+#define path L"\\\\.\\pipe\\MyPipe"
 
 int main()
 {
@@ -11,15 +11,37 @@ int main()
 	sa.bInheritHandle = TRUE;
 	sa.lpSecurityDescriptor = NULL;
 	sa.nLength = 0;
-
+	int a = 0;
 	HANDLE file;
-	file = CreateFileA(path, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, &sa, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	printf("%d", file);
-	while (1)
+
+	while (TRUE)
 	{
-		char* buffer = "awdawd";
+		file = CreateFile(path, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+		
+		BOOL checkPipe;
+		DWORD dwMode = PIPE_READMODE_MESSAGE;
+		checkPipe = SetNamedPipeHandleState(
+			file,
+			&dwMode,
+			NULL,
+			NULL
+		);
+		if (checkPipe)
+		{
+			printf("Подключено!\n");
+			scanf_s("%d", a);
+		}
+		else
+		{
+			printf("Сервер не отвечает\n");
+			Sleep(1000);
+		}
+
+
+
+		/*char* buffer = "awdawd";
 		int countSymbols = 0;
-		WriteFile(file, buffer, 7, &countSymbols, NULL);
+		WriteFile(file, buffer, 7, &countSymbols, NULL);*/
 	}
 	
 }
