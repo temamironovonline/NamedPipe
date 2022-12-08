@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <Windows.h>
 #include <malloc.h>
@@ -10,6 +12,8 @@ int main()
 	HANDLE pipe;
 	char* buffer = calloc(20, sizeof(char));
 	int countSymbols = 0;
+	int a = 5;
+
 	while (TRUE)
 	{
 		pipe = CreateNamedPipeA(
@@ -28,26 +32,24 @@ int main()
 
 		if (checkConnect)
 		{
-			printf("Клиент подключился!");
+			printf("Клиент подключился!\n");
+			while (TRUE)
+			{
+				BOOL check = ReadFile(pipe, buffer, 20, &countSymbols, NULL);
+				if (!check)
+				{
+					printf("Клиент отключился!\n");
+					break;
+				}
+				a = atoi(buffer);
+				a *= a;
+				sprintf(buffer, "%d", a);
 
-			ReadFile(pipe, buffer, 20, &checkConnect, NULL);
-			printf("%s", buffer);
+				WriteFile(pipe, buffer, 20, &countSymbols, NULL);
+				
+			}
+			
 		}
 
-	}
-	
-	
-	
-	
-	
-	
-	int a;
-	while (1)
-	{
-		ReadFile(pipe, buffer, 7, &countSymbols, NULL);
-		//a = atoi(buffer);
-		printf("%s", buffer);
-		Sleep(1000);
-		//WaitForSingleObject(pipe, INFINITE);
 	}
 }

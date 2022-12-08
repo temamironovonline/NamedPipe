@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <Windows.h>
 #include <malloc.h>
@@ -11,7 +13,10 @@ int main()
 	sa.bInheritHandle = TRUE;
 	sa.lpSecurityDescriptor = NULL;
 	sa.nLength = 0;
-	int a = 0;
+	
+	int digit = 0;
+	char* buffer = calloc(20, sizeof(char));
+	int countSymbols;
 	HANDLE file;
 
 	while (TRUE)
@@ -29,7 +34,29 @@ int main()
 		if (checkPipe)
 		{
 			printf("Подключено!\n");
-			scanf_s("%d", a);
+			BOOL checkWord = FALSE;
+			while(TRUE)
+			{
+				fgets(buffer, 20, stdin);
+				
+				for (int i = 0; buffer[i] != '\0'; i++)
+				{
+					if (isalpha(buffer[i]) != 0)
+					{
+						printf("Не число! Повторите ввод!\n");
+						checkWord = TRUE;
+						break;
+					}
+				}
+				if (!checkWord)
+				{
+					WriteFile(file, buffer, 20, &countSymbols, NULL);
+					ReadFile(file, buffer, 20, &countSymbols, NULL);
+					printf("%s\n", buffer);
+				}
+				else checkWord = FALSE;
+				
+			}
 		}
 		else
 		{
@@ -37,11 +64,6 @@ int main()
 			Sleep(1000);
 		}
 
-
-
-		/*char* buffer = "awdawd";
-		int countSymbols = 0;
-		WriteFile(file, buffer, 7, &countSymbols, NULL);*/
 	}
 	
 }
